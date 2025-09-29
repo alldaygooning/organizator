@@ -3,9 +3,15 @@ services:
     image: lobby_boy:dev
     container_name: lobby_boy_dev
     volumes:
-      - ${LOBBY_BOY_DIR}/src:/app/src:cached
+      - ${LOBBY_BOY_DIR}/src:/lobby_boy/src:cached
     environment:
       - JWT_SECRET=${JWT_SECRET}
     ports:
       - "${LOBBY_BOY_PORT}:8080"
       - "${LOBBY_BOY_DEBUG}:5005"
+    command:
+      ["bash"]
+    stdin_open:
+      true 
+    tty:
+      true 
