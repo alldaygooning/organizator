@@ -1,0 +1,11 @@
+services:
+  lobby_boy:
+    image: lobby_boy:dev
+    container_name: lobby_boy_dev
+    volumes:
+      - ${LOBBY_BOY_DIR}/src:/app/src:cached
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+    ports:
+      - "${LOBBY_BOY_PORT}:8080"
+      - "${LOBBY_BOY_DEBUG}:5005"
