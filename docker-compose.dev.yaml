@@ -1,17 +1,45 @@
 services:
-  lobby_boy:
-    image: lobby_boy:dev
-    container_name: lobby_boy_dev
-    volumes:
-      - ${LOBBY_BOY_DIR}/src:/lobby_boy/src:cached
-    environment:
-      - JWT_SECRET=${JWT_SECRET}
-    ports:
-      - "${LOBBY_BOY_PORT}:8080"
-      - "${LOBBY_BOY_DEBUG}:5005"
-    command:
-      ["bash"]
-    stdin_open:
-      true 
-    tty:
-      true 
+    lobby_boy:
+        image: organizator/lobby_boy:dev
+        container_name: lobby_boy_dev
+        build:
+            context: ./lobby_boy
+            dockerfile: Dockerfile.dev
+        volumes:
+            - ${LOBBY_BOY_DIR}/src:/lobby_boy/src:cached
+        environment:
+            - JWT_SECRET=${JWT_SECRET}
+        ports:
+            - "${LOBBY_BOY_PORT}:8080"
+            - "${LOBBY_BOY_DEBUG}:5005"
+        command: ["bash"]
+        stdin_open: true 
+        tty: true
+    nginx:
+        image: organizator/nginx:dev
+        container_name: nginx_organizator_dev
+        build:
+            context: ./nginx
+            dockerfile: Dockerfile.dev
+        environment:
+            - LOBBY_BOY_PORT=${LOBBY_BOY_PORT}
+        ports:
+            - "${NGINX_PORT}:80"
+        depends_on:
+            - lobby_boy
+#        healthcheck:
+#            test: ["CMD", "curl", "-f", "http://localhost"]
+#            interval: 30s
+#            timeout: 10s
+#            retries: 3
+#            start_period: 40s
+#    postgres:
+#        image: organizator/postgres:dev
+#        container_name: postgres_organizator_dev
+#        build:
+#            context: ./postgres
+#            dockerfile: Dockerfile.dev
+#        volumes:
+#            - 
+#        ports:
+#            - 
