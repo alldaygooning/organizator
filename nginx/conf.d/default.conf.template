@@ -6,7 +6,7 @@ server {
     listen 80;
     server_name _;
 
-    location /api/users {
+    location ~ ^/(api/users|api/jwt)(/.*)? {
         proxy_pass         http://lobby_boy;
         proxy_set_header   Host $host;
         proxy_set_header   X-Real-IP $remote_addr;
