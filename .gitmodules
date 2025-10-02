@@ -1,3 +1,6 @@
 [submodule "lobby_boy"]
 	path = lobby_boy
 	url = https://github.com/alldaygooning/organizator-lobby_boy
+[submodule "organaut"]
+	path = organaut
+	url = https://github.com/alldaygooning/organizator-organaut
