@@ -4,3 +4,6 @@
 [submodule "organaut"]
 	path = organaut
 	url = https://github.com/alldaygooning/organizator-organaut
+[submodule "webview"]
+	path = webview
+	url = https://github.com/alldaygooning/organizator-webview
