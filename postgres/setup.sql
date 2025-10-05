@@ -44,3 +44,10 @@ create table if not exists users_organizations(
     organization_id bigint not null references organization(id),
     primary key (user_id, organization_id)
 );
+
+alter table users_organizations 
+drop constraint users_organizations_organization_id_fkey;
+
+alter table users_organizations 
+add constraint users_organizations_organization_id_fkey 
+foreign key (organization_id) references organization(id) on delete cascade;
