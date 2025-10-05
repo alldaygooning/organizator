@@ -51,3 +51,96 @@ drop constraint users_organizations_organization_id_fkey;
 alter table users_organizations 
 add constraint users_organizations_organization_id_fkey 
 foreign key (organization_id) references organization(id) on delete cascade;
+
+
+
+
+
+create or replace function deleteByType(owner_id integer, org_type organization_type)
+returns table(deleted_id bigint) as $$
+begin
+    return query
+    delete from organization 
+    where id in (
+        select uo.organization_id 
+        from users_organizations uo 
+        where uo.user_id = owner_id
+    )
+    and type = org_type
+    returning id;
+end;
+$$ language plpgsql;
+
+
+
+
+create or replace function getTotalRating()
+returns integer as $$
+declare
+    total_rating integer;
+begin
+    select sum(rating) into total_rating
+    from organization
+    where rating is not null;
+    
+    return total_rating;
+end;
+$$ language plpgsql;
+
+
+
+
+create or replace function getTopOrganizationIdsByTurnover()
+returns table(org_id bigint) 
+as $$
+begin
+    return query
+    select id
+    from organization
+    order by annual_turnover desc
+    limit 5;
+end;
+$$ language plpgsql;
+
+
+
+
+create or replace function getAverageEmployeeCount()
+returns decimal as $$
+declare
+    avg_employees decimal;
+begin
+    select avg(employees_count) into avg_employees
+    from (
+        select employees_count
+        from organization
+        where employees_count is not null
+        order by annual_turnover desc
+        limit 10
+    ) as top_organizations;
+    
+    return avg_employees;
+end;
+$$ language plpgsql;
+
+
+
+
+create or replace function groupByAddress()
+returns table(
+    address_id integer,
+    organization_count bigint
+) as $$
+begin
+    return query
+    select 
+        a.id as address_id,
+        count(o.id) as organization_count
+    from address a
+    left join organization o on o.address_id = a.id
+    group by a.id
+    order by organization_count desc;
+end;
+$$ language plpgsql;
+
+
