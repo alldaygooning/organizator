@@ -1,0 +1,69 @@
+services:
+    lobby_boy:
+        image: organizator/lobby_boy:prod
+        container_name: lobby_boy_prod
+        build:
+            context: ./lobby_boy
+            dockerfile: Dockerfile.prod
+        environment:
+            - JWT_SECRET=${JWT_SECRET}
+            - API_KEY=${LOBBY_BOY_API_KEY}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_DB=${POSTGRES_DB}
+            - POSTGRES_PORT=${POSTGRES_PORT}
+        hostname: lobby-boy
+        ports:
+            - "${LOBBY_BOY_PORT}:8080"
+        depends_on:
+            - postgres
+    organaut:
+        image: organizator/organaut:prod
+        container_name: organaut_prod
+        build:
+            context: ./organaut
+            dockerfile: Dockerfile.prod
+        environment:
+            - LOBBY_BOY_API_KEY=${LOBBY_BOY_API_KEY}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_DB=${POSTGRES_DB}
+            - POSTGRES_PORT=${POSTGRES_PORT}
+        ports:
+            - "${ORGANAUT_PORT}:8080"
+        depends_on:
+            - postgres
+    nginx:
+        image: organizator/nginx:prod
+        container_name: nginx_organizator_prod
+        build:
+            context: .
+            dockerfile: ./nginx/Dockerfile.prod
+        ports:
+            - "${NGINX_PORT}:80"
+        depends_on:
+            - lobby_boy
+            - organaut
+    postgres:
+        image: organizator/postgres:prod
+        container_name: postgres_organizator_prod
+        build:
+            context: ./postgres
+            dockerfile: Dockerfile.prod
+        environment:
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_DB=${POSTGRES_DB}
+        volumes:
+            - postgres-data-prod:/var/lib/postgresql/data
+        ports:
+            - "${POSTGRES_PORT}:5432"
+        healthcheck:
+            test: ["CMD", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+            interval: 20s
+            timeout: 5s
+            retries: 3
+    
+volumes:
+  postgres-data-prod:
+  
