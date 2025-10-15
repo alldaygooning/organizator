@@ -15,6 +15,10 @@ services:
         hostname: lobby-boy
         ports:
             - "${LOBBY_BOY_PORT}:8080"
+        deploy:
+            resources:
+                limits:
+                    memory: 180M
         depends_on:
             - postgres
     organaut:
@@ -31,6 +35,10 @@ services:
             - POSTGRES_PORT=${POSTGRES_PORT}
         ports:
             - "${ORGANAUT_PORT}:8080"
+        deploy:
+            resources:
+                limits:
+                    memory: 180M
         depends_on:
             - postgres
     nginx:
@@ -41,6 +49,10 @@ services:
             dockerfile: ./nginx/Dockerfile.prod
         ports:
             - "${NGINX_PORT}:80"
+        deploy:
+            resources:
+                limits:
+                    memory: 32M
         depends_on:
             - lobby_boy
             - organaut
@@ -58,6 +70,10 @@ services:
             - postgres-data-prod:/var/lib/postgresql/data
         ports:
             - "${POSTGRES_PORT}:5432"
+        deploy:
+            resources:
+                limits:
+                    memory: 64M
         healthcheck:
             test: ["CMD", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
             interval: 20s
