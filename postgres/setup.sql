@@ -32,9 +32,12 @@ create table if not exists organization(
 	postal_address_id integer not null references address(id)
 ); 
 
+create type user_role as enum ('ADMIN', 'USER');
+
 create table if not exists users(
 	id serial primary key,
 	name varchar (50) not null unique,
+	role user_role not null default 'USER',
 	hash varchar not null,
 	salt varchar (10) not null
 );
