@@ -27,7 +27,7 @@ create table if not exists organization(
 	annual_turnover integer not null check (annual_turnover > 0),
 	employees_count integer check (employees_count > 0),
 	rating integer check (rating > 0),
-	full_name varchar not null,
+	full_name varchar unique not null,
 	type organization_type,
 	postal_address_id integer not null references address(id)
 ); 
