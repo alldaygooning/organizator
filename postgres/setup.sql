@@ -55,6 +55,17 @@ alter table users_organizations
 add constraint users_organizations_organization_id_fkey 
 foreign key (organization_id) references organization(id) on delete cascade;
 
+create type import_status as enum('FAILED', 'SUCCESSFUL', 'IN_PROGRESS', 'ON_MODERATION');
+
+create table if not exists import(
+	id serial primary key,
+	created_at timestamp not null default current_timestamp,
+	user_id integer not null,
+	total integer not null,
+	status import_status not null default 'IN_PROGRESS',
+	foreign key(user_id) references users(id) on delete cascade
+);
+
 
 
 

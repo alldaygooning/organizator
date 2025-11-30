@@ -45,6 +45,7 @@ services:
         tty: true
         depends_on:
             - postgres
+            - flowable-rest 
     webview:
         image: organizator/webview:dev
         container_name: webview_dev
@@ -94,10 +95,41 @@ services:
         ports:
             - "${POSTGRES_PORT}:5432"
         healthcheck:
-            test: ["CMD", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
-            interval: 20s
+            test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+            interval: 10s
             timeout: 5s
-            retries: 3
+            retries: 5
+            start_period: 10s
+            
+    flowable-rest:
+        image: flowable/flowable-rest:7.0.0
+        container_name: flowable_rest_dev
+        hostname: flowable_rest
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+            - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+            - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+            - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+        ports:
+            - "${FLOWABLE_REST_PORT}:8080"
+        depends_on:
+            postgres:
+                condition: service_healthy
+
+    flowable-ui:
+        image: flowable/flowable-ui:6.8.0
+        container_name: flowable_ui_dev
+        hostname: flowable_ui
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+            - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+            - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+            - FLOWABLE_REST_HOST=http://flowable-rest:8080
+            - FLOWABLE_REST_CONTEXT_ROOT=flowable-rest
+        ports:
+            - "${FLOWABLE_UI_PORT}:8080"
+        depends_on:
+            - flowable-rest
 
 
 

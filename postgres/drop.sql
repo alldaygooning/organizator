@@ -5,3 +5,5 @@ drop table if exists organization cascade;
 drop table if exists users cascade;
 drop table if exists users_organizations cascade;
 drop type if exists user_role cascade;
+drop type if exists import_status cascade;
+drop table if exists import cascade;
